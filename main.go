@@ -8,6 +8,8 @@ import (
 	_ "modernc.org/sqlite"
 )
 
+const DBFileName = "tracker.db"
+
 const (
 	ParcelStatusRegistered = "registered"
 	ParcelStatusSent       = "sent"
@@ -97,9 +99,15 @@ func (s ParcelService) Delete(number int) error {
 }
 
 func main() {
-	// настройте подключение к БД
 
-	store := // создайте объект ParcelStore функцией NewParcelStore
+	db, err := sql.Open("sqlite", DBFileName)
+	if err != nil {
+		fmt.Println("Error on db connection:", err)
+		return
+	}
+	defer db.Close()
+
+	store := NewParcelStore(db)
 	service := NewParcelService(store)
 
 	// регистрация посылки
