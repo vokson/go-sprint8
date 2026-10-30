@@ -8,7 +8,7 @@ import (
 	_ "modernc.org/sqlite"
 )
 
-const DbFileName = "tracker.db"
+const DBFileName = "tracker.db"
 
 const (
 	ParcelStatusRegistered = "registered"
@@ -100,7 +100,7 @@ func (s ParcelService) Delete(number int) error {
 
 func main() {
 
-	db, err := sql.Open("sqlite", DbFileName)
+	db, err := sql.Open("sqlite", DBFileName)
 	if err != nil {
 		fmt.Println("Error on db connection:", err)
 		return

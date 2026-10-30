@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,7 +27,7 @@ func getTestParcel() Parcel {
 func newTestStore(t *testing.T) ParcelStore {
 	t.Helper()
 
-	db, err := sql.Open("sqlite", DbFileName)
+	db, err := sql.Open("sqlite", DBFileName)
 	require.NoError(t, err)
 	t.Cleanup(func() { _ = db.Close() })
 
@@ -45,12 +46,12 @@ func TestAddGetDelete(t *testing.T) {
 
 	dbParcel, err := store.Get(id)
 	require.NoError(t, err)
-	require.Equal(t, parcel, dbParcel)
+	assert.Equal(t, parcel, dbParcel)
 
 	require.NoError(t, store.Delete(id))
 
 	_, err = store.Get(id)
-	require.Error(t, err, "getting deleted parcel should return error")
+	require.ErrorIs(t, err, sql.ErrNoRows)
 }
 
 func TestSetAddress(t *testing.T) {
@@ -67,7 +68,7 @@ func TestSetAddress(t *testing.T) {
 
 	dbParcel, err := store.Get(id)
 	require.NoError(t, err)
-	require.Equal(t, newAddress, dbParcel.Address)
+	assert.Equal(t, newAddress, dbParcel.Address)
 }
 
 func TestSetStatus(t *testing.T) {
@@ -114,11 +115,11 @@ func TestGetByClient(t *testing.T) {
 	storedParcels, err := store.GetByClient(client)
 	require.NoError(t, err)
 
-	require.Len(t, storedParcels, len(parcels))
+	assert.Len(t, storedParcels, len(parcels))
 
 	for _, parcel := range storedParcels {
 		p, ok := parcelMap[parcel.Number]
 		require.True(t, ok)
-		require.Equal(t, parcel, p)
+		assert.Equal(t, parcel, p)
 	}
 }
